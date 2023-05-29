@@ -38,11 +38,6 @@ class TestCard(pygame.sprite.Sprite):
         self.y += distance
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
-        # if the center thing is giving too much trouble
-        #self.rect = self.image.get_rect()
-        #self.rect.x = x
-        #self.rect.y = y
-
     def cardHighlight(self, mousePos):
         self.rect = self.image.get_rect(center=(mousePos[0], mousePos[1]))
 
@@ -57,10 +52,10 @@ testimage = pygame.image.load(".\\Images\\cardtemp.png").convert_alpha() #last b
 
 cardHeight = 400
 
-card1 = TestCard(150, cardHeight)
+card1 = TestCard(100, cardHeight)
 card2 = TestCard(200, cardHeight)
-card3 = TestCard(250, cardHeight)
-card4 = TestCard(300, cardHeight)
+card3 = TestCard(300, cardHeight)
+card4 = TestCard(400, cardHeight)
 
 spriteGroup1 = pygame.sprite.Group()
 
@@ -72,24 +67,54 @@ spriteGroup1.add(card4)
 
 # Game loop
 running = True
+mousebuttondown = False
 while running:
+    key = pygame.key.get_pressed()
+    mousePosition = pygame.mouse.get_pos()
+    mouseRect = pygame.Rect(mousePosition[0], mousePosition[1], 5, 5)
+
+    collideList = [card1.rect, card2.rect, card3.rect, card4.rect]
+    collision = mouseRect.collideobjects(collideList)
+    if collision:
+        print("your mom")
+        print(collision)
+
+    if card1.rect.collidepoint(mousePosition):
+        if card1.y > 300:
+            card1.moveCard(-5)
+
+    else:
+        if card1.y < 400:
+            card1.moveCard(5)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+        elif key[pygame.K_SPACE]:
+            card1.moveCard(10)
+            print("pressed")
+    
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mousebuttondown == True
+            mousePos = event.pos
+            card1.cardHighlight(mousePos)
+            print(mousePos)
+            print("clicked")
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            mousebuttondown = False
+
+        elif event.type == pygame.MOUSEMOTION:
+            if mousebuttondown:
+                mousePos = event.pos
+                print(mousePos)
+                card1.cardHighlight(mousePos)
+                print("clicked")
+
     window.fill((255, 255, 255))
 
-    key = pygame.key.get_pressed()
-    if key[pygame.K_SPACE]:
-        card1.moveCard(10)
-        print("pressed")
-    
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        mousePos = event.pos
-        print(mousePos)
-        card1.cardHighlight(mousePos)
-        print("clicked")
-
+  
 
     spriteGroup1.update()
     spriteGroup1.draw(window)
