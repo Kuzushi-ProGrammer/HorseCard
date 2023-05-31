@@ -1,4 +1,5 @@
 
+from turtle import window_height
 import pygame
 
 
@@ -33,13 +34,14 @@ class TestCard(pygame.sprite.Sprite):
         self.imageSize = self.image.get_rect().size
         self.image = pygame.transform.scale(self.image, (self.imageSize[0]/4, self.imageSize[1]/4))
         self.rect = self.image.get_rect(center=(self.x, self.y))
+        self.halfrect = self.image.get_rect(center=(self.x - 500, self.y))
 
     def moveCard(self, distance):
         self.y += distance
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
-    def cardHighlight(self, mousePos):
-        self.rect = self.image.get_rect(center=(mousePos[0], mousePos[1]))
+    def cardReplace(self, distance):
+        pass
 
 
         
@@ -47,10 +49,11 @@ class TestCard(pygame.sprite.Sprite):
 #Initializing Pygame and objects
 pygame.init()
 window = pygame.display.set_mode((500, 500))
+clock = pygame.time.Clock()
 
 testimage = pygame.image.load(".\\Images\\cardtemp.png").convert_alpha() #last bit improves performance
 
-cardHeight = 400
+cardHeight = 500
 
 card1 = TestCard(100, cardHeight)
 card2 = TestCard(200, cardHeight)
@@ -64,28 +67,108 @@ spriteGroup1.add(card2)
 spriteGroup1.add(card3)
 spriteGroup1.add(card4)
 
-
+cardSpeed = 15
+defaultCardHeight = 500
+selectedCardHeight = 400
+submittedCardSpeed = 20
+gameWindowHeight = 650
 # Game loop
 running = True
-mousebuttondown = False
+cardMoving = False
 while running:
     key = pygame.key.get_pressed()
     mousePosition = pygame.mouse.get_pos()
-    mouseRect = pygame.Rect(mousePosition[0], mousePosition[1], 5, 5)
+    mouseRect = pygame.Rect(mousePosition[0], mousePosition[1], 1, 1)
 
-    collideList = [card1.rect, card2.rect, card3.rect, card4.rect]
-    collision = mouseRect.collideobjects(collideList)
-    if collision:
-        print("your mom")
-        print(collision)
+    #---
+    if not cardMoving:
+        if card1.rect.collidepoint(mousePosition):
+            cardHovered = 1
+            if card1.y > selectedCardHeight:
+                card1.moveCard(-cardSpeed)
 
-    if card1.rect.collidepoint(mousePosition):
-        if card1.y > 300:
-            card1.moveCard(-5)
+            if card2.y < defaultCardHeight:
+                card2.moveCard(cardSpeed)
 
-    else:
-        if card1.y < 400:
-            card1.moveCard(5)
+            if card3.y < defaultCardHeight:
+                card3.moveCard(cardSpeed)
+
+            if card4.y < defaultCardHeight:
+                card4.moveCard(cardSpeed)
+
+        elif card2.rect.collidepoint(mousePosition):
+            cardHovered = 2
+            if card2.y > selectedCardHeight:
+                card2.moveCard(-cardSpeed)
+
+            if card1.y < defaultCardHeight:
+                card1.moveCard(cardSpeed)
+
+            if card3.y < defaultCardHeight:
+                card3.moveCard(cardSpeed)
+
+            if card4.y < defaultCardHeight:
+                card4.moveCard(cardSpeed)
+
+        elif card3.rect.collidepoint(mousePosition):
+            cardHovered = 3
+            if card3.y > selectedCardHeight:
+                card3.moveCard(-cardSpeed)
+
+            if card1.y < defaultCardHeight:
+                card1.moveCard(cardSpeed)
+
+            if card2.y < defaultCardHeight:
+                card2.moveCard(cardSpeed)
+
+            if card4.y < defaultCardHeight:
+                card4.moveCard(cardSpeed)
+
+        elif card4.rect.collidepoint(mousePosition):
+            cardHovered = 4
+            if card4.y > selectedCardHeight:
+                card4.moveCard(-cardSpeed)
+
+            if card1.y < defaultCardHeight:
+                card1.moveCard(cardSpeed)
+
+            if card2.y < defaultCardHeight:
+                card2.moveCard(cardSpeed)
+
+            if card3.y < defaultCardHeight:
+                card3.moveCard(cardSpeed)
+        else:
+            cardHovered = 0
+            if card1.y < defaultCardHeight:
+                card1.moveCard(cardSpeed)
+
+            if card2.y < defaultCardHeight:
+                card2.moveCard(cardSpeed)
+
+            if card3.y < defaultCardHeight:
+                card3.moveCard(cardSpeed)
+
+            if card4.y < defaultCardHeight:
+                card4.moveCard(cardSpeed)
+
+    if cardMoving:
+        if cardHovered == 1:
+            if card1.y < gameWindowHeight:
+                card1.moveCard(submittedCardSpeed)
+            cardHovered = 0
+        cardMoving = False
+                # change vars after card goes off screen
+                
+
+
+    '''
+    Potential ideas
+        -flip over card have it go through top of screen
+        -need a conditional that determines when cards can be selected
+    '''
+
+
+    #---
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -96,21 +179,14 @@ while running:
             print("pressed")
     
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mousebuttondown == True
             mousePos = event.pos
-            card1.cardHighlight(mousePos)
-            print(mousePos)
-            print("clicked")
+            print(cardHovered)
+            if cardHovered != 0: 
+                cardMoving = True
+
 
         elif event.type == pygame.MOUSEBUTTONUP:
             mousebuttondown = False
-
-        elif event.type == pygame.MOUSEMOTION:
-            if mousebuttondown:
-                mousePos = event.pos
-                print(mousePos)
-                card1.cardHighlight(mousePos)
-                print("clicked")
 
     window.fill((255, 255, 255))
 
@@ -120,6 +196,7 @@ while running:
     spriteGroup1.draw(window)
 
     pygame.display.flip()
+    clock.tick(60)
 
 pygame.quit()
 
