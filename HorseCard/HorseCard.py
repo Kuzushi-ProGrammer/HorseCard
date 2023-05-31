@@ -1,6 +1,7 @@
 
-from turtle import window_height
 import pygame
+import time
+import random
 
 
 
@@ -23,7 +24,7 @@ class NullCard(Card):
 
 
 
-class TestCard(pygame.sprite.Sprite):
+class Card(pygame.sprite.Sprite):
     def __init__(self, posX, posY):
         super().__init__()
 
@@ -40,7 +41,18 @@ class TestCard(pygame.sprite.Sprite):
         self.y += distance
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
-    def cardReplace(self, distance):
+    def cardReplace(self, cardHovered):
+        global cardMoving
+        # Want a solution so that I can generate the variable name from the input number
+        # Need a reference to the object
+
+        if cardHovered == 1:
+            if card.y < gameWindowHeight:
+                card.moveCard(submittedCardSpeed)
+            else:
+                cardMoving = False
+                cardHovered = 0
+                # change vars after card goes off screen
         pass
 
 
@@ -55,10 +67,10 @@ testimage = pygame.image.load(".\\Images\\cardtemp.png").convert_alpha() #last b
 
 cardHeight = 500
 
-card1 = TestCard(100, cardHeight)
-card2 = TestCard(200, cardHeight)
-card3 = TestCard(300, cardHeight)
-card4 = TestCard(400, cardHeight)
+card1 = Card(100, cardHeight)
+card2 = Card(200, cardHeight)
+card3 = Card(300, cardHeight)
+card4 = Card(400, cardHeight)
 
 spriteGroup1 = pygame.sprite.Group()
 
@@ -155,10 +167,34 @@ while running:
         if cardHovered == 1:
             if card1.y < gameWindowHeight:
                 card1.moveCard(submittedCardSpeed)
-            cardHovered = 0
-        cardMoving = False
+            else:
+                cardMoving = False
+                cardHovered = 0
                 # change vars after card goes off screen
-                
+
+        elif cardHovered == 2:
+            if card2.y < gameWindowHeight:
+                card2.moveCard(submittedCardSpeed)
+            else:
+                cardMoving = False
+                cardHovered = 0
+                # change vars after card goes off screen
+
+        elif cardHovered == 3:
+            if card3.y < gameWindowHeight:
+                card3.moveCard(submittedCardSpeed)
+            else:
+                cardMoving = False
+                cardHovered = 0
+                # change vars after card goes off screen
+
+        elif cardHovered == 4:
+            if card4.y < gameWindowHeight:
+                card4.moveCard(submittedCardSpeed)
+            else:
+                cardMoving = False
+                cardHovered = 0
+                # change vars after card goes off screen
 
 
     '''
