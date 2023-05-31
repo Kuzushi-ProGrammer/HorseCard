@@ -165,6 +165,11 @@ while running:
     Potential ideas
         -flip over card have it go through top of screen
         -need a conditional that determines when cards can be selected
+
+    Issues
+        -All cards get stuck after click, probably due to the fact that the variable isnt being unset anywhere
+        -if statement,,
+
     '''
 
 
