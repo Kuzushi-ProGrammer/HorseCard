@@ -31,7 +31,7 @@ class Card(pygame.sprite.Sprite):
         self.x = posX
         self.y = posY
 
-        self.image = testimage
+        self.image = baseImage
         self.imageSize = self.image.get_rect().size
         self.image = pygame.transform.scale(self.image, (self.imageSize[0]/4, self.imageSize[1]/4))
         self.rect = self.image.get_rect(center=(self.x, self.y))
@@ -41,29 +41,67 @@ class Card(pygame.sprite.Sprite):
         self.y += distance
         self.rect = self.image.get_rect(center=(self.x, self.y))
 
-    def cardReplace(self, cardHovered):
+    def cardReplace(self, distance):
         global cardMoving
-        # Want a solution so that I can generate the variable name from the input number
-        # Need a reference to the object
+        if self.y < gameWindowHeight:
+            self.y += distance
+            self.rect = self.image.get_rect(center=(self.x, self.y))
 
-        if cardHovered == 1:
-            if card.y < gameWindowHeight:
-                card.moveCard(submittedCardSpeed)
-            else:
-                cardMoving = False
-                cardHovered = 0
-                # change vars after card goes off screen
-        pass
+        else:
+            cardMoving = False
+            # change vars after card goes off screen
+'''
+-------------------------------------------
+How could I implement statistics?
+-------------------------------------------
+ -self.stats = [1, 0, 3] (list based)
+
+ -self.statsDict = {
+                    boost: 1,
+                    stall: 0,
+                    sprint: 3
+                   } (dict based)
+
+- self.boost = 1   -> self.boost = deckCard.boost (?)
+  self.stall = 0
+  self.sprint = 3
+  (var based)
+
+  (Null cards are just normal cards with all variables set to 0)
+
+  Problems:
+      - Selecting a card from a deck may not work? I'd have to implement extra framework
+      - Purely randomly generated cards are no fun
+      - Store cards in text file for easy modification?
+          - Would need to format it in a way that would accept all data such as:
+              - Card Type (Boost, Stall, Sprint, Null)
+              - Card Statistics
+              - Image Properties and Location
 
 
-        
+      - Dictionary allows for easiest overwriting of stats and should be pretty flexible in an external text file
+      - Load images onto the card object and keep them linked up so the image doesnt stay in place when card goes away
+      - When card goes off screen, only change the variables on the object itself, dont change the object(?)
+      - Have a global tracker to keep track of your position and enemies position in the race
+          - Need to make simple AI (probably just algorithmic like always attacks, only goes left to right, etc.)
+      - Turn based or real time?
+
+  Game loop
+      - Opens up the game into a menu
+          -Settings allows you to choose a deck from the deck folder (not sure if there will be a card limit)
+      - Places you randomly along one of 4-6 tracks (idk how many yet)
+      - Countdown (3, 2, 1, Go!)
+
+
+
+'''        
 
 #Initializing Pygame and objects
 pygame.init()
 window = pygame.display.set_mode((500, 500))
 clock = pygame.time.Clock()
 
-testimage = pygame.image.load(".\\Images\\cardtemp.png").convert_alpha() #last bit improves performance
+baseImage = pygame.image.load(".\\Images\\cardtemp.png").convert_alpha() #last bit improves performance
 
 cardHeight = 500
 
@@ -84,18 +122,19 @@ defaultCardHeight = 500
 selectedCardHeight = 400
 submittedCardSpeed = 20
 gameWindowHeight = 650
+
 # Game loop
 running = True
 cardMoving = False
 while running:
     key = pygame.key.get_pressed()
     mousePosition = pygame.mouse.get_pos()
-    mouseRect = pygame.Rect(mousePosition[0], mousePosition[1], 1, 1)
 
     #---
+    # Do not know how to make this more efficient with less if statments
     if not cardMoving:
         if card1.rect.collidepoint(mousePosition):
-            cardHovered = 1
+            cardHovered = card1
             if card1.y > selectedCardHeight:
                 card1.moveCard(-cardSpeed)
 
@@ -109,7 +148,7 @@ while running:
                 card4.moveCard(cardSpeed)
 
         elif card2.rect.collidepoint(mousePosition):
-            cardHovered = 2
+            cardHovered = card2
             if card2.y > selectedCardHeight:
                 card2.moveCard(-cardSpeed)
 
@@ -123,7 +162,7 @@ while running:
                 card4.moveCard(cardSpeed)
 
         elif card3.rect.collidepoint(mousePosition):
-            cardHovered = 3
+            cardHovered = card3
             if card3.y > selectedCardHeight:
                 card3.moveCard(-cardSpeed)
 
@@ -137,7 +176,7 @@ while running:
                 card4.moveCard(cardSpeed)
 
         elif card4.rect.collidepoint(mousePosition):
-            cardHovered = 4
+            cardHovered = card4
             if card4.y > selectedCardHeight:
                 card4.moveCard(-cardSpeed)
 
@@ -163,75 +202,24 @@ while running:
             if card4.y < defaultCardHeight:
                 card4.moveCard(cardSpeed)
 
+    #---
+
     if cardMoving:
-        if cardHovered == 1:
-            if card1.y < gameWindowHeight:
-                card1.moveCard(submittedCardSpeed)
-            else:
-                cardMoving = False
-                cardHovered = 0
-                # change vars after card goes off screen
-
-        elif cardHovered == 2:
-            if card2.y < gameWindowHeight:
-                card2.moveCard(submittedCardSpeed)
-            else:
-                cardMoving = False
-                cardHovered = 0
-                # change vars after card goes off screen
-
-        elif cardHovered == 3:
-            if card3.y < gameWindowHeight:
-                card3.moveCard(submittedCardSpeed)
-            else:
-                cardMoving = False
-                cardHovered = 0
-                # change vars after card goes off screen
-
-        elif cardHovered == 4:
-            if card4.y < gameWindowHeight:
-                card4.moveCard(submittedCardSpeed)
-            else:
-                cardMoving = False
-                cardHovered = 0
-                # change vars after card goes off screen
-
-
-    '''
-    Potential ideas
-        -flip over card have it go through top of screen
-        -need a conditional that determines when cards can be selected
-
-    Issues
-        -All cards get stuck after click, probably due to the fact that the variable isnt being unset anywhere
-        -if statement,,
-
-    '''
-
+        cardHovered.cardReplace(20)
+        pass
 
     #---
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-        elif key[pygame.K_SPACE]:
-            card1.moveCard(10)
-            print("pressed")
     
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mousePos = event.pos
-            print(cardHovered)
             if cardHovered != 0: 
                 cardMoving = True
 
-
-        elif event.type == pygame.MOUSEBUTTONUP:
-            mousebuttondown = False
-
     window.fill((255, 255, 255))
-
-  
 
     spriteGroup1.update()
     spriteGroup1.draw(window)
