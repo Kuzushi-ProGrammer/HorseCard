@@ -37,6 +37,16 @@ class Card(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.x, self.y))
         self.halfrect = self.image.get_rect(center=(self.x - 500, self.y))
 
+        self.cardStats = {
+                            self.name: "",
+                            self.description: "",
+                            self.type: "",
+                          # self.image: "image name",
+                            self.boost: 0,
+                            self.sprint: 0,
+                            self.stall: 0
+                         }
+
     def moveCard(self, distance):
         self.y += distance
         self.rect = self.image.get_rect(center=(self.x, self.y))
@@ -50,6 +60,10 @@ class Card(pygame.sprite.Sprite):
         else:
             cardMoving = False
             # change vars after card goes off screen
+
+    def cardUpdate(self):
+        pass
+
 '''
 -------------------------------------------
 How could I implement statistics?
@@ -70,8 +84,6 @@ How could I implement statistics?
   (Null cards are just normal cards with all variables set to 0)
 
   Problems:
-      - Selecting a card from a deck may not work? I'd have to implement extra framework
-      - Purely randomly generated cards are no fun
       - Store cards in text file for easy modification?
           - Would need to format it in a way that would accept all data such as:
               - Card Type (Boost, Stall, Sprint, Null)
@@ -92,8 +104,6 @@ How could I implement statistics?
       - Places you randomly along one of 4-6 tracks (idk how many yet)
       - Countdown (3, 2, 1, Go!)
 
-
-
 '''        
 
 #Initializing Pygame and objects
@@ -102,6 +112,10 @@ window = pygame.display.set_mode((500, 500))
 clock = pygame.time.Clock()
 
 baseImage = pygame.image.load(".\\Images\\cardtemp.png").convert_alpha() #last bit improves performance
+
+horseDeck = open("HorseData.txt")
+#do things
+
 
 cardHeight = 500
 

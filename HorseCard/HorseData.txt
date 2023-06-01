@@ -1,0 +1,9 @@
+{
+	name: "horse",
+	description: "horsing about",
+	type: "null",
+	image_name: "KingCard.png",
+	boost_stat: 1,
+	sprint_stat: 2,
+	stall_stat: 3
+}
